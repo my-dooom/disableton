@@ -1,5 +1,8 @@
-int main() {
-  configure_endpoints();
+#include "audio_endpoint.hh"
 
-  return 0;
+int main() {
+    configure_endpoint(const std::string &endpoint, endpoint_type &direction,
+                       snd_pcm_format_t &audio_format);
+
+    return 0;
 }
