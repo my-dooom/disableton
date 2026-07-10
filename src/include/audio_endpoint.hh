@@ -22,5 +22,8 @@ typedef struct {
     snd_pcm_t *playback;
 } endpoint_type;
 
-int configure_endpoint(const std::string &endpoint, endpoint_type &direction,
-                       snd_pcm_format_t &audio_format);
+device_mount detect_device_mounting(const std::string &endpoint);
+
+int configure_endpoint(const std::string &endpoint, endpoint_type &direction);
+
+int set_best_format(endpoint_type &direction);
