@@ -21,6 +21,8 @@ int open_spi_config(const mcp3008_config_t *config);
 
 
 int open_spi(const char *device);
+
+int read_mcp3008(int fd, uint8_t channel);
 #ifdef __cplusplus
 }
 #endif

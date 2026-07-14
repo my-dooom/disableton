@@ -80,3 +80,38 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 add_test(NAME AudioEndpointTests COMMAND audio_endpoint_tests)
+
+# MCP3008 interface tests
+add_executable(mcp3008_iface_tests
+  src/io/mcp3008_iface.c
+  tests/mcp3008_iface_test.cc
+)
+
+target_include_directories(mcp3008_iface_tests
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/include
+)
+
+target_link_libraries(mcp3008_iface_tests
+  PRIVATE
+    gmock_main
+)
+
+# Add linker flags to wrap POSIX/SPI functions for mocking
+target_link_options(
+  mcp3008_iface_tests
+  PRIVATE
+    -Wl,--wrap=open
+    -Wl,--wrap=close
+    -Wl,--wrap=ioctl
+)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(
+    mcp3008_iface_tests
+    PRIVATE
+    -Wall -Wextra -Wpedantic
+  )
+endif()
+
+add_test(NAME Mcp3008IfaceTests COMMAND mcp3008_iface_tests)
