@@ -1,6 +1,7 @@
 #include <alsa/asoundlib.h>
 #include <string>
 
+extern snd_pcm_format_t g_stream_format;
 enum class device_mount {
     Unknown,
     USB,
@@ -26,4 +27,4 @@ device_mount detect_device_mounting(const std::string &endpoint);
 
 int configure_endpoint(const std::string &endpoint, endpoint_type &direction);
 
-int set_best_format(endpoint_type &direction);
+int get_best_format(endpoint_type &direction);

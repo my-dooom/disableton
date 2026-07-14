@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(disableton VERSION 0.1.0 LANGUAGES CXX)
+project(disableton VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -25,6 +25,7 @@ fetchcontent_makeavailable(googletest)
 add_executable(disableton
     src/main.cc
     src/io/audio_endpoint.cc
+    src/io/mcp3008_iface.c
 )
 
 
@@ -39,7 +40,7 @@ target_include_directories(disableton
 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  target_compile_options(disableton PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(disableton PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
 # Audio endpoint tests
@@ -71,7 +72,7 @@ target_link_options(
 )
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  target_compile_options(
+    target_compile_options(
     audio_endpoint_tests
     PRIVATE
     -Wall -Wextra -Wpedantic

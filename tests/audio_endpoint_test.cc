@@ -219,7 +219,7 @@ TEST_F(SetBestFormatTests, FindsBestFormatWhenSupported) {
     ep.capture = reinterpret_cast<snd_pcm_t*>(1);
     ep.playback = reinterpret_cast<snd_pcm_t*>(2);
 
-    int result = set_best_format(ep);
+    int result = get_best_format(ep);
     // Should return success
     EXPECT_EQ(result, 0);
 }
@@ -232,7 +232,7 @@ TEST_F(SetBestFormatTests, ReturnsErrorWhenHwParamsAnyFails) {
     ep.capture = reinterpret_cast<snd_pcm_t*>(1);
     ep.playback = reinterpret_cast<snd_pcm_t*>(2);
 
-    int result = set_best_format(ep);
+    int result = get_best_format(ep);
     (void)result; // intentionally unused in this test
     // Should handle gracefully
     SUCCEED();
@@ -247,7 +247,7 @@ TEST_F(SetBestFormatTests, ReturnsErrorWhenNoCommonFormat) {
     ep.capture = reinterpret_cast<snd_pcm_t*>(1);
     ep.playback = reinterpret_cast<snd_pcm_t*>(2);
 
-    int result = set_best_format(ep);
+    int result = get_best_format(ep);
     // Should return error when no format is supported
     EXPECT_EQ(result, -EINVAL);
 }
@@ -257,6 +257,6 @@ TEST_F(SetBestFormatTests, ReturnsIntegerValue) {
     ep.capture = reinterpret_cast<snd_pcm_t*>(1);
     ep.playback = reinterpret_cast<snd_pcm_t*>(2);
 
-    int result = set_best_format(ep);
+    int result = get_best_format(ep);
     EXPECT_TRUE(std::is_integral_v<decltype(result)>);
 }

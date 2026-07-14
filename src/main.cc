@@ -1,4 +1,5 @@
 #include "audio_endpoint.hh"
+#include "mcp3008_iface.h"
 
 int main() {
     std::string capture_device = "hw:CARD=USB,DEV=0";
@@ -14,7 +15,11 @@ int main() {
         endpoint.capture = nullptr;
         return 1;
     }
-    if (set_best_format(endpoint) != 0) {
+    if (get_best_format(endpoint) != 0) {
+        return 1;
+    }
+    
+    if (open_spi("/dev/spidev0.0") < 0) {
         return 1;
     }
 

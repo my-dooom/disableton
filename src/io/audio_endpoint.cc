@@ -5,6 +5,8 @@
 
 // std::string playback_device = "hw:CARD=DAC,DEV=0";
 
+snd_pcm_format_t g_stream_format = SND_PCM_FORMAT_FLOAT_LE;
+
 device_mount detect_device_mounting(const std::string &endpoint) {
     if (endpoint.find("USB") != std::string::npos)
         return device_mount::USB;
@@ -35,7 +37,7 @@ int configure_endpoint(const std::string &endpoint, endpoint_type &direction) {
         err = snd_pcm_open(&direction.playback, endpoint.c_str(), SND_PCM_STREAM_PLAYBACK, 0);
         break;
     case device_mount::Unknown:
-        // TODO: error with logging to stderr when something is not connected 
+        // TODO: error with logging to stderr when something is not connected
         // properly
         err = -EINVAL;
         break;
@@ -45,7 +47,9 @@ int configure_endpoint(const std::string &endpoint, endpoint_type &direction) {
     return err;
 }
 
-int set_best_format(endpoint_type &direction) {
+void set_best_format_internal(snd_pcm_format_t format) { g_stream_format = format; }
+
+int get_best_format(endpoint_type &direction) {
     int err = 0;
     snd_pcm_format_t audio_format = SND_PCM_FORMAT_UNKNOWN;
     for (snd_pcm_format_t format_candidate : format_candidates) {
@@ -64,5 +68,8 @@ int set_best_format(endpoint_type &direction) {
         direction.capture = nullptr;
         return -EINVAL;
     }
+
+    set_best_format_internal(audio_format);
+
     return err;
 }
