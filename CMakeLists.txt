@@ -26,6 +26,7 @@ add_executable(disableton
     src/main.cc
     src/io/audio_endpoint.cc
     src/io/mcp3008_iface.c
+    src/device/device_config.cc
 )
 
 

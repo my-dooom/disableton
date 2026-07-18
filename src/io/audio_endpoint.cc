@@ -5,7 +5,6 @@
 
 // std::string playback_device = "hw:CARD=DAC,DEV=0";
 
-snd_pcm_format_t g_stream_format = SND_PCM_FORMAT_FLOAT_LE;
 
 device_mount detect_device_mounting(const std::string &endpoint) {
     if (endpoint.find("USB") != std::string::npos)
@@ -25,7 +24,7 @@ static bool is_format_supported(snd_pcm_t *handle, snd_pcm_format_t format) {
            snd_pcm_hw_params_test_format(handle, params, format) == 0;
 }
 
-int configure_endpoint(const std::string &endpoint, endpoint_type &direction) {
+int open_endpoint(const std::string &endpoint, endpoint_type &direction) {
 
     int err = 0;
     device_mount mount = detect_device_mounting(endpoint);
@@ -47,29 +46,19 @@ int configure_endpoint(const std::string &endpoint, endpoint_type &direction) {
     return err;
 }
 
-void set_best_format_internal(snd_pcm_format_t format) { g_stream_format = format; }
 
-int get_best_format(endpoint_type &direction) {
-    int err = 0;
-    snd_pcm_format_t audio_format = SND_PCM_FORMAT_UNKNOWN;
+int get_best_format(endpoint_type &direction, snd_pcm_format_t *out_format) {
+    *out_format = SND_PCM_FORMAT_UNKNOWN;
     for (snd_pcm_format_t format_candidate : format_candidates) {
-
         if (is_format_supported(direction.capture, format_candidate) &&
             is_format_supported(direction.playback, format_candidate)) {
-            audio_format = format_candidate;
-            break;
+            *out_format = format_candidate;
+            return 0;
         }
     }
-    if (audio_format == SND_PCM_FORMAT_UNKNOWN) {
-        std::cerr << "no common mmap-capable PCM format between capture and playback hw devices\n";
-        snd_pcm_close(direction.capture);
-        snd_pcm_close(direction.playback);
-        direction.playback = nullptr;
-        direction.capture = nullptr;
-        return -EINVAL;
-    }
 
-    set_best_format_internal(audio_format);
-
-    return err;
+    // No shared format: report the failure but leave endpoint teardown to the
+    // caller, which already owns the handles via RAII.
+    std::cerr << "no common mmap-capable PCM format between capture and playback hw devices\n";
+    return -EINVAL;
 }

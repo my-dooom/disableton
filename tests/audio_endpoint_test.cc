@@ -132,7 +132,7 @@ TEST(DeviceMountingTests, CaseInsensitiveUSBDetection) {
 }
 
 // ============================================================================
-// Tests for configure_endpoint() with mocked ALSA
+// Tests for open_endpoint() with mocked ALSA
 // ============================================================================
 
 class ConfigureEndpointTests : public MockAlsaFixture {
@@ -154,7 +154,7 @@ TEST_F(ConfigureEndpointTests, OpensUSBCaptureDevice) {
     ep.capture = nullptr;
     ep.playback = nullptr;
 
-    int result = configure_endpoint("hw:CARD=USB,DEV=0", ep);
+    int result = open_endpoint("hw:CARD=USB,DEV=0", ep);
     EXPECT_EQ(result, 0);
     EXPECT_NE(ep.capture, nullptr);
 }
@@ -165,7 +165,7 @@ TEST_F(ConfigureEndpointTests, OpensDACPlaybackDevice) {
     ep.capture = nullptr;
     ep.playback = nullptr;
 
-    int result = configure_endpoint("hw:CARD=DAC,DEV=0", ep);
+    int result = open_endpoint("hw:CARD=DAC,DEV=0", ep);
     EXPECT_EQ(result, 0);
     EXPECT_NE(ep.playback, nullptr);
 }
@@ -176,7 +176,7 @@ TEST_F(ConfigureEndpointTests, HandlesInvalidDeviceStringGracefully) {
     ep.capture = nullptr;
     ep.playback = nullptr;
 
-    int result = configure_endpoint("hw:INVALID,DEV=0", ep);
+    int result = open_endpoint("hw:INVALID,DEV=0", ep);
     EXPECT_EQ(result, -EINVAL);
 }
 
@@ -186,7 +186,7 @@ TEST_F(ConfigureEndpointTests, HandlesUnknownDeviceType) {
     ep.playback = nullptr;
 
     // Unknown device type should not attempt to open
-    int result = configure_endpoint("hw:CARD=MYSTERY,DEV=0", ep);
+    int result = open_endpoint("hw:CARD=MYSTERY,DEV=0", ep);
     (void)result; // intentionally unused in this test
     // Function should handle gracefully without crashing
     SUCCEED();
@@ -197,7 +197,7 @@ TEST_F(ConfigureEndpointTests, ReturnsIntegerValue) {
     ep.capture = nullptr;
     ep.playback = nullptr;
 
-    int result = configure_endpoint("hw:CARD=USB,DEV=0", ep);
+    int result = open_endpoint("hw:CARD=USB,DEV=0", ep);
     EXPECT_TRUE(std::is_integral_v<decltype(result)>);
 }
 
@@ -219,7 +219,8 @@ TEST_F(SetBestFormatTests, FindsBestFormatWhenSupported) {
     ep.capture = reinterpret_cast<snd_pcm_t*>(1);
     ep.playback = reinterpret_cast<snd_pcm_t*>(2);
 
-    int result = get_best_format(ep);
+    snd_pcm_format_t format = SND_PCM_FORMAT_UNKNOWN;
+    int result = get_best_format(ep, &format);
     // Should return success
     EXPECT_EQ(result, 0);
 }
@@ -232,7 +233,8 @@ TEST_F(SetBestFormatTests, ReturnsErrorWhenHwParamsAnyFails) {
     ep.capture = reinterpret_cast<snd_pcm_t*>(1);
     ep.playback = reinterpret_cast<snd_pcm_t*>(2);
 
-    int result = get_best_format(ep);
+    snd_pcm_format_t format = SND_PCM_FORMAT_UNKNOWN;
+    int result = get_best_format(ep, &format);
     (void)result; // intentionally unused in this test
     // Should handle gracefully
     SUCCEED();
@@ -247,7 +249,8 @@ TEST_F(SetBestFormatTests, ReturnsErrorWhenNoCommonFormat) {
     ep.capture = reinterpret_cast<snd_pcm_t*>(1);
     ep.playback = reinterpret_cast<snd_pcm_t*>(2);
 
-    int result = get_best_format(ep);
+    snd_pcm_format_t format = SND_PCM_FORMAT_UNKNOWN;
+    int result = get_best_format(ep, &format);
     // Should return error when no format is supported
     EXPECT_EQ(result, -EINVAL);
 }
@@ -257,6 +260,7 @@ TEST_F(SetBestFormatTests, ReturnsIntegerValue) {
     ep.capture = reinterpret_cast<snd_pcm_t*>(1);
     ep.playback = reinterpret_cast<snd_pcm_t*>(2);
 
-    int result = get_best_format(ep);
+    snd_pcm_format_t format = SND_PCM_FORMAT_UNKNOWN;
+    int result = get_best_format(ep, &format);
     EXPECT_TRUE(std::is_integral_v<decltype(result)>);
 }

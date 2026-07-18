@@ -70,6 +70,7 @@ Testing/
 
 # output directories
 debug/
+docs/
 
 # style
 .clang-format
