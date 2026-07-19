@@ -4,16 +4,10 @@
 #include <iostream>
 #include <string>
 
-int configure_device(
-    snd_pcm_t* handle,
-    const char* role,
-    snd_pcm_format_t stream_format,
-    unsigned sample_rate,
-    unsigned channels,
-    snd_pcm_uframes_t period_frames,
-    unsigned buffer_periods
-) {
-    snd_pcm_hw_params_t* hw_params;
+int configure_device(snd_pcm_t *handle, const char *role, snd_pcm_format_t stream_format,
+                     unsigned sample_rate, unsigned channels, snd_pcm_uframes_t period_frames,
+                     unsigned buffer_periods) {
+    snd_pcm_hw_params_t *hw_params;
     snd_pcm_hw_params_alloca(&hw_params);
 
     unsigned int rate = sample_rate;
@@ -23,7 +17,7 @@ int configure_device(
     snd_pcm_uframes_t buffer_frames = period_frames * buffer_periods;
 
     struct step_t {
-        const char* name;
+        const char *name;
         std::string detail;
         std::function<int()> run;
     };
@@ -34,7 +28,8 @@ int configure_device(
         {"hw_params_any", "", [&] { return snd_pcm_hw_params_any(handle, hw_params); }},
         {"set_access", "",
          [&] {
-             return snd_pcm_hw_params_set_access(handle, hw_params, SND_PCM_ACCESS_MMAP_INTERLEAVED);
+             return snd_pcm_hw_params_set_access(handle, hw_params,
+                                                 SND_PCM_ACCESS_MMAP_INTERLEAVED);
          }},
         {"set_format", snd_pcm_format_name(stream_format),
          [&] { return snd_pcm_hw_params_set_format(handle, hw_params, stream_format); }},
@@ -51,7 +46,7 @@ int configure_device(
         {"hw_params apply", "", [&] { return snd_pcm_hw_params(handle, hw_params); }},
     };
 
-    for (const auto& step : steps) {
+    for (const auto &step : steps) {
         if (const int err = step.run(); err < 0) {
             std::cerr << role << " " << step.name;
             if (!step.detail.empty()) {
@@ -63,6 +58,6 @@ int configure_device(
     }
 
     std::cerr << role << " configured: rate=" << rate << " period=" << frames
-               << " buffer=" << buffer_frames << "\n";
+              << " buffer=" << buffer_frames << "\n";
     return 0;
 }

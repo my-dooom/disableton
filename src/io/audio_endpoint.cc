@@ -5,7 +5,6 @@
 
 // std::string playback_device = "hw:CARD=DAC,DEV=0";
 
-
 device_mount detect_device_mounting(const std::string &endpoint) {
     if (endpoint.find("USB") != std::string::npos)
         return device_mount::USB;
@@ -45,7 +44,6 @@ int open_endpoint(const std::string &endpoint, endpoint_type &direction) {
     }
     return err;
 }
-
 
 int get_best_format(endpoint_type &direction, snd_pcm_format_t *out_format) {
     *out_format = SND_PCM_FORMAT_UNKNOWN;

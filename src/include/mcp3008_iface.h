@@ -16,9 +16,7 @@ typedef struct {
     uint8_t bits_per_word;
 } mcp3008_config_t;
 
-
 int open_spi_config(const mcp3008_config_t *config);
-
 
 int open_spi(const char *device);
 

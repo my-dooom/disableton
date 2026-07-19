@@ -65,15 +65,11 @@ int main() {
 
     spi_handle spi{spi_fd};
 
-    struct device_role {
-        snd_pcm_t *handle;
-        const char *name;
-    };
     const device_role roles[] = {{capture.get(), "capture"}, {playback.get(), "playback"}};
 
     for (const auto &role : roles) {
         if (configure_device(role.handle, role.name, stream_format, SAMPLE_RATE, CHANNELS,
-                              PERIOD_FRAMES, BUFFER_PERIODS) != 0) {
+                             PERIOD_FRAMES, BUFFER_PERIODS) != 0) {
             fprintf(stderr, "main: failed to configure %s device\n", role.name);
             return 1;
         }

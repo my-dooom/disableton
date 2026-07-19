@@ -1,7 +1,7 @@
 #include "mcp3008_iface.h"
-#include <stdint.h>
 #include <fcntl.h>
 #include <linux/spi/spidev.h>
+#include <stdint.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -53,9 +53,9 @@ int read_mcp3008(int fd, uint8_t channel) {
         return -1;
     // Build the command to read from the specified channel
     uint8_t tx[3] = {
-        0x01,                  // Start bit
+        0x01,                                      // Start bit
         (uint8_t)((0x08 | (channel & 0x07)) << 4), // Single-ended mode, channel selection
-        0x00                   // dummy byte to clock out the data
+        0x00                                       // dummy byte to clock out the data
     };
     uint8_t rx[3] = {0};
 
@@ -83,4 +83,3 @@ int read_mcp3008(int fd, uint8_t channel) {
     }
     return ret;
 }
-
