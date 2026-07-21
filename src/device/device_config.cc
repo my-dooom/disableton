@@ -56,8 +56,6 @@ int configure_device(snd_pcm_t *handle, const char *role, snd_pcm_format_t strea
             return err;
         }
     }
-
-    std::cerr << role << " configured: rate=" << rate << " period=" << frames
-              << " buffer=" << buffer_frames << "\n";
+    // std::cerr << role << " configured\n";
     return 0;
 }
